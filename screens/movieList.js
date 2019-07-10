@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text,FlatList, Image,StyleSheet } from 'react-native'
-import { Card, ListItem, Button, Icon } from 'react-native-elements'
-import { CardTitle, CardContent, CardAction, CardButton, CardImage } from 'react-native-material-cards'
+import {
+  BrowserRouter as Router,
+  Link,
+  Route,
+  Switch} from 'react-router-dom';
+  import MovieDetailScreen from './MovieDetailScreen';
 
 export default class movieList extends Component {
   constructor() {
@@ -33,16 +37,26 @@ export default class movieList extends Component {
    
    
   }
+  static navigationOptions ={
+    title:'Movie List',
+    headerStyle: {
+    backgroundColor: "#fff"
+    },
+    headerTitleStyle: {
+      fontWeight: "bold"
+    }
+  }
   render() {
     return (
       <View style={styles.MainContainer}>
-        <FlatList
+        <FlatList 
           data={this.state.dataSource}
           renderItem={({ item }) => (
-            <View style={styles.cardContainer}>
-              <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
-              <Text style={styles.textTitle}>{item.name}</Text>
-            </View>
+                <View style={styles.cardContainer} onPress={() => this.props.navigation.navigate('MovieDetailScreen') }>
+                  <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
+                  <Text style={styles.textTitle}>{item.name}</Text>
+                </View>
+      
           )}
           //Setting the number of column
           numColumns={2}
@@ -53,6 +67,8 @@ export default class movieList extends Component {
     );
   }
 }
+
+
 
 const styles = StyleSheet.create({
   MainContainer: {

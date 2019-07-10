@@ -6,6 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import movieList from '../screens/movieList';
 import SettingsScreen from '../screens/SettingsScreen';
+import MovieDetailScreen from '../screens/MovieDetailScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -14,7 +15,7 @@ const config = Platform.select({
 
 const HomeStack = createStackNavigator(
   {
-    Home: HomeScreen,
+    Home: movieList,
   },
   config
 );
@@ -34,22 +35,42 @@ HomeStack.navigationOptions = {
 };
 
 HomeStack.path = '';
-
-const movieListStack = createStackNavigator(
+const MovieDetailStack = createStackNavigator(
   {
-    Links: movieList,
+    MovieDetail : MovieDetailScreen,
   },
   config
 );
-
-movieListStack.navigationOptions = {
-  tabBarLabel: 'Links',
+MovieDetailStack.navigationOptions = {
+  tabBarLabel: 'MovieDetailStack',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}`
+          : 'md-information-circle'
+      }
+    />
   ),
 };
+MovieDetailStack.path = '';
 
-movieList.path = '';
+// const movieListStack = createStackNavigator(
+//   {
+//     Links: movieList,
+//   },
+//   config
+// );
+
+// movieListStack.navigationOptions = {
+//   tabBarLabel: 'Links',
+//   tabBarIcon: ({ focused }) => (
+//     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
+//   ),
+// };
+
+// movieList.path = '';
 
 const SettingsStack = createStackNavigator(
   {
@@ -69,8 +90,9 @@ SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
-  movieListStack,
+
   SettingsStack,
+  MovieDetailStack
 });
 
 tabNavigator.path = '';
