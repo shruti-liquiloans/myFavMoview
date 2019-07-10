@@ -1,72 +1,85 @@
 import React, { Component } from 'react';
-import {Image,Platform,SectionList,StyleSheet,Text,TouchableOpacity,View,} from 'react-native';
+import {Image,Button,FlatList,Alert,StyleSheet,Text,TouchableOpacity,View,ActivityIndicator} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default class MovieDetailScreen extends Component  {
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: "Movie Details",
-      headerStyle: {backgroundColor: "#fff"},
-      headerTitleStyle: {textAlign: "center",flex: 1}
-     };
-    };
+  static navigationOptions ={
+    title:'Movie Details',
+    headerStyle: {
+    backgroundColor: "#fff"
+    },
+    headerTitleStyle: {
+      fontWeight: "bold"
+    }
+  }
     constructor(props) {
       super(props);
       this.state = {
         loading: true,
-        dataSource:[]
+        dataSource:[],
+        items:[]
        };
      }
   componentDidMount() {
-    var that = this;
-    fetch(
-      "https://api.themoviedb.org/3/movie/550?api_key=5edd3fbc92f915b5d00d8c6952bcd3ea",
+    const { navigation } = this.props;
+    const movieId = navigation.getParam('movieId');
+    this.state.id = JSON.stringify(movieId);
+    //Alert.alert(this.state.id)
+   return fetch(
+      "https://api.themoviedb.org/3/movie/"+this.state.id+"?api_key=5edd3fbc92f915b5d00d8c6952bcd3ea",
       {
         method: "GET",
       })
       .then((response) => response.json())
         .then((responseJson) => {
+          console.log(responseJson)
+          let items =  [{
+                id: responseJson.id, 
+                src: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2/'+responseJson.poster_path,
+                name :responseJson.original_title,
+                overView : responseJson.overview,
+                releaseDate : responseJson.release_date,
+            }]
           this.setState({
             loading: false,
-            dataSource: responseJson
+            dataSource: items
            })
          
-          // console.log(responseJson)
-          // const items =  {
-          //     id: responseJson.id, 
-          //     src: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2/'+item.poster_path,
-          //     name :item.original_title,
-          //     overView : item.overview
-          // }
-          // return items;
-          // that.setState({
-          //   dataSource: items,
-          // });
-    })
+        })
+        .catch((error)=> {console.error(error)})
    
    
   }
   render(){
-    return (
-      <SectionList
-      renderItem={({ item, section, index }) => (
+    if(this.state.loading){
+      return (
         <View style={styles.MainContainer}>
-          <View style={styles.cardContainer}>
-            <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
-            <Text style={styles.textTitle}>{item}</Text>
+          <ActivityIndicator size="large" color="#0000ff" />
           </View>
-        </View>
-        )}
-      />
-      // <View>
-      //   <Text>Helli</Text>
-      // </View>
-    );
+      )
+    }else{
+      
+      let movie = this.state.dataSource.map((item) => {
+        return <View key={item.id} style={styles.cardContainer}>
+                <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
+                <Text style={styles.textTitle}>{item.name}</Text>
+                <Text style={styles.textTitle}>Release Date : {item.releaseDate}</Text>
+                <Text style={styles.overViewText}>{item.overView}</Text>
+            </View>
+
+      });
+      return (
+       
+        <ScrollView>
+            <View style={styles.MainContainer}>{movie}</View>
+            <Button title="Go Back" onPress={() => { this.props.navigation.goBack('movieId', '') }} />
+        </ScrollView>
+      );
+    }
   }
 }
 
-MovieDetailScreen.navigationOptions = {
-  header: null,
-};
+
 
 const styles = StyleSheet.create({
   MainContainer: {
@@ -77,10 +90,10 @@ const styles = StyleSheet.create({
   imageThumbnail: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 100,
+    height: 250,
   },
   cardContainer: {
-    width:'50%',
+    width:'100%',
     backgroundColor:'#fff',
     margin:5,
     marginBottom:10,
@@ -95,7 +108,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 1.0
   },
   textTitle: {
-    fontWeight:'bold'
+    fontWeight:'bold',
+    fontSize: 18,
+    padding:10
+  },
+  overViewText:{
+    padding:10
   }
 })
 

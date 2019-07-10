@@ -37,7 +37,7 @@ HomeStack.navigationOptions = {
 HomeStack.path = '';
 const MovieDetailStack = createStackNavigator(
   {
-    MovieDetail : MovieDetailScreen,
+    MovieDetailScreen : MovieDetailScreen,
   },
   config
 );

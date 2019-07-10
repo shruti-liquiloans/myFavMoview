@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text,FlatList, Image,StyleSheet } from 'react-native'
-import {
-  BrowserRouter as Router,
-  Link,
-  Route,
-  Switch} from 'react-router-dom';
-  import MovieDetailScreen from './MovieDetailScreen';
+import { View, Text,FlatList,TouchableOpacity,ScrollView, Image,StyleSheet,Picker,Alert } from 'react-native'
+//import MovieDetailScreen from './MovieDetailScreen';
 
 export default class movieList extends Component {
   constructor() {
@@ -15,7 +10,6 @@ export default class movieList extends Component {
     };
   }
   componentDidMount() {
-    var that = this;
     fetch(
       "https://api.themoviedb.org/3/movie/now_playing?api_key=5edd3fbc92f915b5d00d8c6952bcd3ea&language=en-US&page=1",
       {
@@ -30,7 +24,7 @@ export default class movieList extends Component {
               name :item.original_title
             };
           });
-          that.setState({
+          this.setState({
             dataSource: items,
           });
     })
@@ -46,15 +40,64 @@ export default class movieList extends Component {
       fontWeight: "bold"
     }
   }
+  onPickerValueChange=(value, index)=>{
+    this.setState(
+      {
+        "throttlemode": value
+      },
+      () => {
+        //  Alert.alert("Throttlemode", this.state.throttlemode);
+        fetch(
+          "https://api.themoviedb.org/3/discover/movie?page=1&include_video=false&include_adult=false&sort_by="+ this.state.throttlemode+"&language=en-US&api_key=5edd3fbc92f915b5d00d8c6952bcd3ea"
+          ,
+          {
+            method: "GET",
+          })
+          .then((response) => response.json())
+            .then((responseJson) => {
+              let items = responseJson.results.map((item) => {
+                return { 
+                  id: item.id, 
+                  src: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2/'+item.poster_path,
+                  name :item.original_title
+                };
+              });
+              this.setState({
+                dataSource: items,
+              });
+        })
+      }
+    );
+  }
   render() {
+    navigation = this.props.navigation;
     return (
+      <ScrollView>
       <View style={styles.MainContainer}>
+       <Picker style={styles.pickerStyle}  
+              selectedValue={this.state.language}  
+              onValueChange={this.onPickerValueChange}  
+          >  
+          <Picker.Item label="Sort By" value="" /> 
+          <Picker.Item label="Popularity Ascending" value="popularity.asc" />  
+          <Picker.Item label="Popularity Descending" value="popularity.desc" />  
+          <Picker.Item label="Rating Ascending" value="vote_average.asc" /> 
+          <Picker.Item label="Rating Descending" value="vote_average.desc" />  
+          <Picker.Item label="Release Year Ascending" value="primary_release_year.asc" /> 
+          <Picker.Item label="Release Year Descending" value="primary_release_year.desc" />  
+      </Picker>  
+
         <FlatList 
           data={this.state.dataSource}
           renderItem={({ item }) => (
-                <View style={styles.cardContainer} onPress={() => this.props.navigation.navigate('MovieDetailScreen') }>
+                <View style={styles.cardContainer}>
+                 <TouchableOpacity
+                      key={item.id}
+                      onPress = {() => navigation.navigate("MovieDetailScreen",{movieId: item.id})}
+                    >
                   <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
                   <Text style={styles.textTitle}>{item.name}</Text>
+                  </TouchableOpacity>
                 </View>
       
           )}
@@ -63,6 +106,7 @@ export default class movieList extends Component {
           keyExtractor={(item, index) => index}
         />
       </View>
+      </ScrollView>
             
     );
   }
