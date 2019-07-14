@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text,FlatList,TouchableOpacity,ScrollView, Image,StyleSheet,Picker,Alert } from 'react-native'
+import { View, Text,FlatList,TextInput,TouchableOpacity,ScrollView, Image,StyleSheet,Picker,Alert } from 'react-native'
 //import MovieDetailScreen from './MovieDetailScreen';
 
 export default class movieList extends Component {
@@ -8,6 +8,7 @@ export default class movieList extends Component {
     this.state = {
       dataSource: {},
     };
+    this.arrayholder = [] ;
   }
   componentDidMount() {
     fetch(
@@ -28,8 +29,6 @@ export default class movieList extends Component {
             dataSource: items,
           });
     })
-   
-   
   }
   static navigationOptions ={
     title:'Movie List',
@@ -69,24 +68,48 @@ export default class movieList extends Component {
       }
     );
   }
+
+  SearchFilterFunction(text){
+     
+    const newData = this.arrayholder.filter(function(item){
+        const itemData = item.fruit_name.toUpperCase()
+        const textData = text.toUpperCase()
+        return itemData.indexOf(textData) > -1
+    })
+    this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(newData),
+        text: text
+    })
+}
+
   render() {
     navigation = this.props.navigation;
     return (
       <ScrollView>
       <View style={styles.MainContainer}>
-       <Picker style={styles.pickerStyle}  
-              selectedValue={this.state.language}  
-              onValueChange={this.onPickerValueChange}  
-          >  
-          <Picker.Item label="Sort By" value="" /> 
-          <Picker.Item label="Popularity Ascending" value="popularity.asc" />  
-          <Picker.Item label="Popularity Descending" value="popularity.desc" />  
-          <Picker.Item label="Rating Ascending" value="vote_average.asc" /> 
-          <Picker.Item label="Rating Descending" value="vote_average.desc" />  
-          <Picker.Item label="Release Year Ascending" value="primary_release_year.asc" /> 
-          <Picker.Item label="Release Year Descending" value="primary_release_year.desc" />  
-      </Picker>  
-
+      <View style={styles.SearchContainer}>
+        <Picker style={styles.pickerStyle}  
+                selectedValue={this.state.language}  
+                onValueChange={this.onPickerValueChange}  
+            >  
+            <Picker.Item label="Sort By" value="" /> 
+            <Picker.Item label="Popularity Ascending" value="popularity.asc" />  
+            <Picker.Item label="Popularity Descending" value="popularity.desc" />  
+            <Picker.Item label="Rating Ascending" value="vote_average.asc" /> 
+            <Picker.Item label="Rating Descending" value="vote_average.desc" />  
+            <Picker.Item label="Release Year Ascending" value="primary_release_year.asc" /> 
+            <Picker.Item label="Release Year Descending" value="primary_release_year.desc" />  
+        </Picker>  
+        <View style={styles.searchBarStyle}>
+          <TextInput 
+          style={styles.TextInputStyleClass}
+          onChangeText={(text) => this.SearchFilterFunction(text)}
+          value={this.state.text}
+          underlineColorAndroid='transparent'
+          placeholder="Search Here"
+            />
+        </View>
+      </View>
         <FlatList 
           data={this.state.dataSource}
           renderItem={({ item }) => (
@@ -115,10 +138,13 @@ export default class movieList extends Component {
 
 
 const styles = StyleSheet.create({
+  SearchContainer:{
+    flexDirection:'row',
+    flex: 1
+  },
   MainContainer: {
     justifyContent: 'center',
-    flex: 1,
-    paddingTop: 30,
+    paddingTop: 30,   
   },
   imageThumbnail: {
     justifyContent: 'center',
@@ -142,5 +168,21 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontWeight:'bold'
-  }
+  },
+  pickerStyle: {
+    width: '50%'
+  },
+  searchBarStyle: {
+    width: '50%'
+  },
+  TextInputStyleClass:{
+        
+    textAlign: 'center',
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#009688',
+    borderRadius: 7 ,
+    backgroundColor : "#FFFFFF"
+         
+    }
 });
