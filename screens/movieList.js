@@ -179,17 +179,17 @@ const styles = StyleSheet.create({
     fontWeight:'bold'
   },
   pickerStyle: {
-    width: '50%'
+    width: '40%',
   },
   searchBarStyle: {
-    width: '50%'
+    width: '60%'
   },
   TextInputStyleClass:{
-        
     textAlign: 'center',
-    height: 40,
+    height: 34,
+    padding :2,
     borderWidth: 1,
-    borderColor: '#009688',
+    borderColor: '#ddd',
     borderRadius: 7 ,
     backgroundColor : "#FFFFFF"
          
