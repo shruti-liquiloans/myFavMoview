@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Image,Button,FlatList,Alert,StyleSheet,Text,TouchableOpacity,View,ActivityIndicator} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 export default class MovieDetailScreen extends Component  {
   static navigationOptions ={
@@ -21,14 +22,23 @@ export default class MovieDetailScreen extends Component  {
        };
      }
 
+
+     componentWillReceiveProps(newProps){
+      const { navigation } = newProps;
+      const itemId = navigation.getParam('movieId', 'NO-ID');
+      this.callAPI(itemId)
+     }
+
      
   componentDidMount() {
-    // const { navigation } = this.props;
-    // const movieId = navigation.getParam('movieId');
-    this.state.id = '550';//JSON.stringify(movieId);
-    //Alert.alert(this.state.id)
-   return fetch(
-      "https://api.themoviedb.org/3/movie/"+this.state.id+"?api_key=5edd3fbc92f915b5d00d8c6952bcd3ea",
+    const { navigation } = this.props;
+    const itemId = navigation.getParam('movieId', 'NO-ID');
+   this.callAPI(itemId)
+  }
+
+  callAPI(itemId){
+    return fetch(
+      "https://api.themoviedb.org/3/movie/"+itemId+"?api_key=5edd3fbc92f915b5d00d8c6952bcd3ea",
       {
         method: "GET",
       })
@@ -41,6 +51,7 @@ export default class MovieDetailScreen extends Component  {
                 name :responseJson.original_title,
                 overView : responseJson.overview,
                 releaseDate : responseJson.release_date,
+                vote_average : responseJson.vote_average,
             }]
           this.setState({
             loading: false,
@@ -49,11 +60,12 @@ export default class MovieDetailScreen extends Component  {
          
         })
         .catch((error)=> {console.error(error)})
-   
-   
+
   }
   render(){
-    navigation = this.props.navigation;
+    const { navigation } = this.props;
+    
+
     if(this.state.loading){
       return (
         <View style={styles.MainContainer}>
@@ -65,7 +77,23 @@ export default class MovieDetailScreen extends Component  {
       let movie = this.state.dataSource.map((item) => {
         return <View key={item.id} style={styles.cardContainer}>
                 <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
-                <Text style={styles.textTitle}>{item.name}</Text>
+                <View  style={styles.textContainer}>
+                <AnimatedCircularProgress
+                      size={50}
+                      width={3}
+                      fill={item.vote_average}
+                      tintColor="#3d5875"
+                      backgroundColor="#00e0ff">
+                      {
+                        (fill) => (
+                          <Text>
+                            { item.vote_average }
+                          </Text>
+                        )
+                      }
+                    </AnimatedCircularProgress>
+                    <Text style={styles.textTitle}>{item.name}</Text>
+                </View>
                 <Text style={styles.textTitle}>Release Date : {item.releaseDate}</Text>
                 <Text style={styles.overViewText}>{item.overView}</Text>
             </View>
@@ -76,7 +104,7 @@ export default class MovieDetailScreen extends Component  {
         <ScrollView>
             <View style={styles.MainContainer}>{movie}</View>
             <TouchableOpacity  onPress={() => navigation.navigate('Home')}>
-              <Text style={styles.loginButtonSection}>Go Back</Text>
+              <Text style={styles.textBtnView}>Go Back</Text>
             </TouchableOpacity>
         </ScrollView>
       );
@@ -121,19 +149,19 @@ const styles = StyleSheet.create({
     padding:10
   },
   textBtnView:{
-    backgroundColor: 'blue',
+    backgroundColor: 'dodgerblue',
     borderColor: 'white',
     borderWidth: 1,
     borderRadius: 12,
     color: 'white',
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     overflow: 'hidden',
-    padding: 12,
+    padding: 10,
     textAlign:'center',
+  },
+  textContainer :{
+    flexDirection:'row',
+    paddingTop : 2
   }
 })
-
-
-
-

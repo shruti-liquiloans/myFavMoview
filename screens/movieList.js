@@ -7,6 +7,7 @@ export default class movieList extends Component {
     super();
     this.state = {
       dataSource: {},
+      defaultDataSource: {}
     };
     this.arrayholder = [] ;
   }
@@ -27,6 +28,7 @@ export default class movieList extends Component {
           });
           this.setState({
             dataSource: items,
+            defaultDataSource: items
           });
     })
   }
@@ -63,24 +65,31 @@ export default class movieList extends Component {
               });
               this.setState({
                 dataSource: items,
+                defaultDataSource: items
               });
         })
       }
     );
   }
 
-  SearchFilterFunction(text){
-     
-    const newData = this.arrayholder.filter(function(item){
-        const itemData = item.fruit_name.toUpperCase()
-        const textData = text.toUpperCase()
-        return itemData.indexOf(textData) > -1
-    })
-    this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(newData),
-        text: text
-    })
-}
+  SearchFilterFunction(text) {
+    var result = this.state.defaultDataSource;
+    if (text === null || text === "") {
+      this.setState({
+        dataSource: this.state.defaultDataSource
+      });
+    } else {
+      var filteredArray = result.filter(function(itm) {
+        return itm.name.includes(text);
+      });
+      this.setState({
+        dataSource: filteredArray
+      });
+    }
+ 
+    // filteredArray = { records : filteredArray };
+  }
+ 
 
   render() {
     navigation = this.props.navigation;
@@ -88,6 +97,15 @@ export default class movieList extends Component {
       <ScrollView>
       <View style={styles.MainContainer}>
       <View style={styles.SearchContainer}>
+        <View style={styles.searchBarStyle}>
+            <TextInput 
+            style={styles.TextInputStyleClass}
+            onChangeText={(text) => this.SearchFilterFunction(text)}
+            value={this.state.text}
+            underlineColorAndroid='transparent'
+            placeholder="Search Here"
+              />
+          </View>
         <Picker style={styles.pickerStyle}  
                 selectedValue={this.state.language}  
                 onValueChange={this.onPickerValueChange}  
@@ -100,15 +118,6 @@ export default class movieList extends Component {
             <Picker.Item label="Release Year Ascending" value="primary_release_year.asc" /> 
             <Picker.Item label="Release Year Descending" value="primary_release_year.desc" />  
         </Picker>  
-        <View style={styles.searchBarStyle}>
-          <TextInput 
-          style={styles.TextInputStyleClass}
-          onChangeText={(text) => this.SearchFilterFunction(text)}
-          value={this.state.text}
-          underlineColorAndroid='transparent'
-          placeholder="Search Here"
-            />
-        </View>
       </View>
         <FlatList 
           data={this.state.dataSource}

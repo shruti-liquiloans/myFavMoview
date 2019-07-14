@@ -22,6 +22,7 @@ const HomeStack = createStackNavigator(
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
+  tabBarVisible : false,
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -35,6 +36,7 @@ HomeStack.navigationOptions = {
 };
 
 HomeStack.path = '';
+
 const MovieDetailStack = createStackNavigator(
   {
     MovieDetailScreen : MovieDetailScreen,
@@ -43,6 +45,7 @@ const MovieDetailStack = createStackNavigator(
 );
 MovieDetailStack.navigationOptions = {
   tabBarLabel: 'MovieDetailStack',
+  tabBarVisible : false,
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -56,22 +59,6 @@ MovieDetailStack.navigationOptions = {
 };
 MovieDetailStack.path = '';
 
-// const movieListStack = createStackNavigator(
-//   {
-//     Links: movieList,
-//   },
-//   config
-// );
-
-// movieListStack.navigationOptions = {
-//   tabBarLabel: 'Links',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
-//   ),
-// };
-
-// movieList.path = '';
-
 const SettingsStack = createStackNavigator(
   {
     Settings: SettingsScreen,
@@ -81,6 +68,7 @@ const SettingsStack = createStackNavigator(
 
 SettingsStack.navigationOptions = {
   tabBarLabel: 'Settings',
+  tabBarVisible : false,
   tabBarIcon: ({ focused }) => (
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
   ),
@@ -90,8 +78,6 @@ SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
-
-  SettingsStack,
   MovieDetailStack
 });
 
