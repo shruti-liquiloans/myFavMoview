@@ -1,4 +1,10 @@
-# myFavMoview
+# About App 
+1. Grid view showing popular movie list.
+2. Allow your user to change sort order via a setting: Popularity,Realese date Acending & descending order..etc
+3. Allow user to search a movie locally by name.
+4. Movie showing Detail about movie with ratings , release date ,movie poster & a Go back button to grid view again
+
+# myFavMovie
 Steps to follow
 1. Clone the Project
 2. cd myFavMoview
